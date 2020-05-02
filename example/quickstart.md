@@ -28,10 +28,17 @@ Here is an example:
     "scope4code.engineCommands": {
         "config": [
             {
-                "find_cmd": "find ${src_path} -type f -name *.[cChH] -o -type f -name *.[ch]pp -o -type f -name *.[sS][qQ][cC] -o -type f -name *.skl -type f -name *.[ce]c -o -type f -name *.mm"
+                "database_cmd": "cscope -b -q -k",
+                "find_cmd": "find ${src_path} -type f -name *.[cChH] -o -type f -name *.[ch]pp -o -type f -name *.[sS][qQ][cC] -o -type f -name *.skl -type f -name *.[ce]c -o -type f -name *.mm",
+                "find_all_ref" : "cscope -qd -L0 ${text}",
+                "find_define" : "cscope -qd -L1 ${text}",
+                "find_callee" : "cscope -qd -L2 ${text}",
+                "find_caller" : "cscope -qd -L3 ${text}",
+                "find_text" : "cscope -qd -L4 ${text}"
             }
         ]
-    }
+    },
+    "scope4code.printCmdBeforeExecute": true
 ```
 by default, `index 0` of `scope4code.engineCommands` array is for `linux/macos/others`, while `index 1` is for `windows`.
 
