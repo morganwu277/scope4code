@@ -36,19 +36,24 @@ export default class ScopeEngine {
     }
 
     private async runSearchCmd(target_cmd : string, search_text : string) : Promise<boolean> {
-        target_cmd = this.filterCmdString(target_cmd, config_variable_str.SEARCH_TEXT, search_text);
         target_cmd = this.filterCmdString(target_cmd, config_variable_str.DATABASE_PATH, this.databasePath);
-        return await this.runCmdWithText(target_cmd);
+        return await this.runCmdWithText(target_cmd, search_text);
     }
 
-    async runCmdWithText(cmd : string) : Promise<boolean> {
-        if (this.cmdPrinter != null) {
-            this.cmdPrinter.notifyUser(cmd);
-        }
+    async runCmdWithText(cmd : string, search_text : string = "") : Promise<boolean> {
         const cmdArray = cmd.split(/[ \t]+/);
+
+        for (let index =0; index < cmdArray.length; ++index) {
+            cmdArray[index] = this.filterCmdString(cmdArray[index], config_variable_str.SEARCH_TEXT, search_text);
+        };
+
         let cmd_ret : cmd_result = {
             success : false, code : 0, stdout : "", stderr : "Unkown error"
         };
+
+        if (this.cmdPrinter != null) {
+            this.cmdPrinter.notifyUser(cmdArray.join(" "));
+        }
 
         if (this.databasePath) {
             cmd_ret = await utilities.run_command(cmdArray[0], cmdArray.slice(1), {cwd : this.databasePath});
@@ -72,7 +77,7 @@ export default class ScopeEngine {
         return this.lastRunResult.stderr;
     }
 
-    public async generateFileList():Promise<boolean> {
+    public async generateFileList(excluded_paths : string[] = []):Promise<boolean> {
         const cmd = this.cmdGenerator.listFileCmd();
 
         let file_list_string : string = "";
@@ -86,6 +91,14 @@ export default class ScopeEngine {
             }
             file_list_string += this.getStdOut();
         }
+        
+        if (Array.isArray(excluded_paths)) {
+            excluded_paths.forEach(path_rule => {
+                const match_rule = new RegExp(`${path_rule}\n`, 'g');
+                file_list_string = file_list_string.replace(match_rule, "");
+            });
+        }
+        
         if (result) {
             fs.writeFileSync(path.join(this.databasePath, 'cscope.files'), file_list_string);
         }

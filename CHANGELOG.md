@@ -1,3 +1,11 @@
+## [Beta v0.2.0]
+### New Features:
+- All configurations are now moved to vscode setting.
+- Added support to exclude un-wanted files.
+- *IMPORTANT: Please read configuration section of readme to ensure setting is properly configured!*
+### Bug fixing:
+- FIxed searching does not work when there are spaces in target text.
+
 ## [Beta v0.1.4]
 - Update default cmd line param.
    Credit to [Oleg A. Arkhangelsky](https://github.com/oleg-umnik).
